@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} - Booking System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ service.name }}</h1>
+        <hr>
+        
+        <h4>Description</h4>
+        <p>{{ service.description }}</p>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Service Details</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Price:</strong> ${{ service.price }}</li>
+                    <li><strong>Duration:</strong> {{ service.duration_minutes }} minutes</li>
+                    <li><strong>Status:</strong> {{ service.get_is_active_display }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'booking:service_list' %}" class="btn btn-secondary">Back to Services</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'booking:create_booking' %}" class="btn btn-primary">Book This Service</a>
+            {% else %}
+                <a href="{% url 'booking:login' %}" class="btn btn-primary">Login to Book</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
