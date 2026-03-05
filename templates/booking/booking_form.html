@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Booking - Booking System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Booking</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Select Services</strong></label>
+                        <div class="border p-3 rounded">
+                            {% for field in form.services %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label">
+                                        {{ field.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if form.services.errors %}
+                            <div class="text-danger mt-2">{{ form.services.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.booking_date.id_for_label }}" class="form-label">{{ form.booking_date.label }}</label>
+                        {{ form.booking_date }}
+                        {% if form.booking_date.errors %}
+                            <div class="text-danger mt-1">{{ form.booking_date.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.booking_time.id_for_label }}" class="form-label">{{ form.booking_time.label }}</label>
+                        {{ form.booking_time }}
+                        {% if form.booking_time.errors %}
+                            <div class="text-danger mt-1">{{ form.booking_time.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="text-danger mt-1">{{ form.notes.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            {% if form.instance.pk %}Update{% else %}Create{% endif %} Booking
+                        </button>
+                        <a href="{% url 'booking:booking_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

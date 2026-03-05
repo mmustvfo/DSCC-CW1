@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - Booking System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Bookings</h1>
+
+<!-- Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="form-inline">
+            <div class="input-group">
+                <select class="form-select" name="status">
+                    <option value="">All Statuses</option>
+                    {% for key, value in booking.STATUS_CHOICES %}
+                        <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary" type="submit">Filter</button>
+                {% if status_filter %}
+                    <a href="{% url 'booking:booking_list' %}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mb-3">
+    <a href="{% url 'booking:create_booking' %}" class="btn btn-success">+ New Booking</a>
+</div>
+
+{% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Date & Time</th>
+                    <th>Services</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>#{{ booking.id }}</td>
+                        <td>{{ booking.booking_date|date:"M d, Y" }} at {{ booking.booking_time|time:"H:i" }}</td>
+                        <td>{{ booking.services.count }} service(s)</td>
+                        <td>${{ booking.total_price }}</td>
+                        <td>
+                            <span class="badge bg-{% if booking.status == 'COMPLETED' %}success{% elif booking.status == 'CANCELLED' %}danger{% elif booking.status == 'CONFIRMED' %}info{% else %}warning{% endif %}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'booking:booking_detail' booking.pk %}" class="btn btn-sm btn-info">View</a>
+                            {% if booking.status == 'PENDING' %}
+                                <a href="{% url 'booking:edit_booking' booking.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                                <form method="POST" action="{% url 'booking:delete_booking' booking.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        You don't have any bookings yet. <a href="{% url 'booking:create_booking' %}">Create one now</a>
+    </div>
+{% endif %}
+{% endblock %}
