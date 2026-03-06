@@ -104,7 +104,7 @@ A comprehensive Django web application demonstrating professional full-stack dev
 ## 🚀 Local Setup & Installation
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.12+
 - pip and virtual environment
 - Git
 
@@ -206,10 +206,10 @@ DB_PORT=5432
 ```
 
 ### Docker Image Specifications
-- **Base Image**: python:3.11-slim
+- **Base Image**: python:3.12-alpine
 - **Multi-stage Build**: Optimized for production
 - **Non-root User**: Security best practice (appuser)
-- **Image Size**: <200MB
+- **Image Size**: 167MB (well under 200MB requirement)
 - **Layer Caching**: Optimized for faster rebuilds
 
 ---
@@ -276,7 +276,7 @@ docker-compose exec web python manage.py collectstatic --noinput
 
 ### Pipeline Overview
 
-The automated workflow (`.github/workflows/deploy.yml`) includes:
+The automated workflow (`.github/workflows/ci-cd.yml`) includes:
 
 1. **Code Quality Checks**
    - flake8 linting
@@ -321,10 +321,11 @@ Required secrets in repository settings:
 pytest
 
 # Run with coverage report
-pytest --cov=booking
+pytest --cov=booking --cov-report=html
 
 # Run specific test file
-pytest booking/tests.py -v
+pytest booking/tests/test_models.py -v
+pytest booking/tests/test_views.py -v
 ```
 
 ### Test Requirements
@@ -354,7 +355,10 @@ DSCC-CW1/
 │   ├── views.py                 # View functions
 │   ├── forms.py                 # Django forms
 │   ├── urls.py                  # URL routing
-│   ├── tests.py                 # Unit tests
+│   ├── tests/                   # Pytest test suite
+│   │   ├── test_models.py      # Model tests
+│   │   ├── test_views.py       # View tests
+│   │   └── test_hello.py       # Basic test
 │   └── management/              # Custom commands
 │
 ├── booking_project/             # Project settings
@@ -497,12 +501,14 @@ newgrp docker
 | Component | Version | Purpose |
 |-----------|---------|---------|
 | Django | 6.0.3 | Web framework |
-| Python | 3.11+ | Runtime |
-| PostgreSQL | 15 | Production database |
+| Python | 3.12+ | Runtime |
+| PostgreSQL | 15-alpine | Production database |
 | Docker | Latest | Containerization |
-| Nginx | Latest | Reverse proxy |
-| Gunicorn | 22.0+ | WSGI server |
-| Bootstrap | 5.3 | Frontend framework |
+| Nginx | alpine | Reverse proxy |
+| Gunicorn | 22.0.0 | WSGI server |
+| Bootstrap | 5 | Frontend framework |
+| pytest | 7.4.3 | Testing framework |
+| pytest-django | 4.7.0 | Django test integration |
 
 ---
 
