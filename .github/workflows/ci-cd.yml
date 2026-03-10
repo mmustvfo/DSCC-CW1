@@ -77,3 +77,33 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/booking-system:latest
           ${{ secrets.DOCKER_USERNAME }}/booking-system:${{ github.sha }}
+
+  deploy:
+    name: Deploy to Eskiz Server
+    needs: push-to-dockerhub
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        script: |
+          cd ~/DATA
+
+          git pull origin main
+
+          docker pull ${{ secrets.DOCKER_USERNAME }}/booking-system:latest
+
+          docker compose down
+
+          docker compose up -d
+
+          docker compose exec -T web python manage.py migrate --noinput
+
+          docker compose exec -T web python manage.py collectstatic --noinput
+
+          docker compose ps
